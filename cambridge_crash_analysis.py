@@ -17,7 +17,13 @@ if __name__ == '__main__':
     parser.add_argument("-latlon", "--latlon", type=str,
                         help="latitude and longitude, comma separated," +
                         "can be used instead of address")
+
     # Can use minx, miny, maxx, maxy args for bounding box instead of address
+    # Example for Inman Square bounding box
+    # minx: -71.102359
+    # maxx: -71.099945
+    # miny: 42.373203
+    # maxy: 42.374416
     parser.add_argument("-minx", "--minx", type=str)
     parser.add_argument("-miny", "--miny", type=str)
     parser.add_argument("-maxx", "--maxx", type=str)
@@ -40,8 +46,6 @@ if __name__ == '__main__':
             'location': {'latitude': lat, 'longitude': lon},
             'address': address
         })
-        print lat
-        print lon
         buffer = (intersection.point).buffer(250)
 
     else:
