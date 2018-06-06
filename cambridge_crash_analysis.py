@@ -64,8 +64,6 @@ if __name__ == '__main__':
         ]])
         feats.append(geojson.Feature(geometry=poly, properties={}))
 
-#        import ipdb; ipdb.set_trace()
-
         p1 = Record({
             'location': {'latitude': miny, 'longitude': minx},
         })
@@ -99,58 +97,14 @@ if __name__ == '__main__':
 
             count += 1
 
-            location = r['Location']
-            lines = location.split('\n')
-            latitude = ''
-            longitude = ''
-
-            address = lines[0]
-            latitude = r['Y']
-            longitude = r['X']
-
-            cyclist = ''
-            pedestrian = ''
-            if r['P2 Non Motorist Desc'] == 'CYCLIST' \
-               or ['P1 Non Motorist Desc'] == 'CYCLIST' \
-               or r['V1 Most Harmful Event'] == 'COLLISION WITH PEDALCYCLE' \
-               or r['First Harmful Event'] == 'COLLISION WITH PEDALCYCLE' \
-               or r['V1 First Event'] == 'COLLISION WITH PEDALCYCLE' \
-               or r['P1 Non Motorist Location'] == 'CYCLIST':
-                cyclist = 'Y'
-            elif r['P2 Non Motorist Desc'] == 'PEDESTRIAN' or r['P2 Non Motorist Desc'] == 'PEDESTRIAN' or r['V1 Most Harmful Event'] == 'COLLISION WITH PEDESTRIAN' or r['V1 First Event'] == 'COLLISION WITH PEDESTRIAN' or r['First Harmful Event'] == 'COLLISION WITH PEDESTRIAN' or r['P1 Non Motorist Location'] == 'PEDESTRIAN':
-                pedestrian = 'Y'
-            record = {}
-#            record = r
-            record['location'] = {'latitude': latitude, 'longitude': longitude}
-            record['cyclist'] = cyclist
-            record['pedestrian'] = pedestrian
-            record['address'] = address
+            lat = float(r['Y'])
+            lon = float(r['X'])
             records.append(Record({
-                'location': {'latitude': latitude, 'longitude': longitude},
-                'address': address,
-#                'bk': location,
-                'date': r['Date Time'],
-                'cyclist': cyclist,
-                'pedestrian': pedestrian,
-#                'P2 Safety Equipment': r['P2 Safety Equipment'],
-                'Near Street': r['Near Street'],
-                'Street Name': r['Street Name'],
-                'Cross Street': r['Cross Street'],
-#                'V1 Most Harmful Event': r['V1 Most Harmful Event'],
-#                'May Involve Pedestrian': r['May Involve Pedestrian'],
-#                'Description of Damaged Property': r['Description of Damaged Property'],
-#                'V1 Second Event': r['V1 Second Event'],
-#                'P2 Non Motorist Location': r['P2 Non Motorist Location'],
-#                'May involve cyclist': r['May involve cyclist'],
-#                'P2 Non Motorist Desc': r['P2 Non Motorist Desc'],
-#                'V2 First Event': r['V2 First Event'],
-                'Intersection Name 1': r['Intersection Name 1'],
-                'Intersection Name 2': r['Intersection Name 2'],
-#                'V1 Fourth Event': r['V1 Fourth Event'],
-#                'P2 Non Motorist Action': r['P2 Non Motorist Action'],
-#                'First Harmful Event': r['First Harmful Event'],
-#                'V1 First Event': r['V1 First Event'],
-                
+                'location': {'latitude': lat, 'longitude': lon},
+                'address': r['Address'],
+                'date': r['DateTime'],
+                'type': r['Type'],
+                'EMS': r['EMS']
             }))
     fields = records[0].properties.keys()
     print street_address_count
@@ -158,11 +112,7 @@ if __name__ == '__main__':
     matches = []
     getcount = 0
 
-#    import ipdb; ipdb.set_trace()
-
-    fields = fields + ['X', 'Y', 'date']
-    header = ['address', 'date', 'X', 'Y', 'cyclist', 'pedestrian']
-    import ipdb; ipdb.set_trace()
+    fields = fields + ['X', 'Y']
 
     with open(args.outputfile, 'w') as outfile:
         writer = csv.DictWriter(outfile, fieldnames=fields)
@@ -170,32 +120,14 @@ if __name__ == '__main__':
 
         for record in records:
             if (record.point).intersects(buffer):
-#                print record.properties['bk']
-#                print record.properties['date']
                 getcount += 1
-#                import ipdb; ipdb.set_trace()
 
                 row = copy.deepcopy(record.properties)
-#                row.pop('bk')
+
                 loc = row.pop('location')
                 row['Y'] = loc['latitude']
                 row['X'] = loc['longitude']
                 writer.writerow(row)
 
-#                feats.append(geojson.Feature(
-#                    geometry=geojson.Point([float(row['X']), float(row['Y'])]),
-#                    properties={}
-#                ))
-#            import ipdb; ipdb.set_trace()
-
-    
-#        record_buffer_bounds = record_point.buffer(tolerance).bounds
-#        nearby_segments = segments_index.intersection(record_buffer_bounds)
-
-#    print "fixed:" + str(fixed_count)
-#    print "poor:" + str(poor_details)
     print getcount
 
-#    featcoll = geojson.FeatureCollection(feats)
-#    with open('buff.geojson', 'w') as outfile:
-#        geojson.dump(featcoll, outfile)
