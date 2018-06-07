@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Leaflet Map</title>
+    <meta charset="utf-8" />
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@0.4.0/dist/leaflet.draw.css" />
+<script src="https://unpkg.com/leaflet-draw@0.4.0/dist/leaflet.draw.js"></script>
+
+</head>
+<body>
+    <div id="map" style="width: 600px; height: 400px"></div>
+
+
+    <script>
+        var map = L.map('map', {drawControl: true}).setView([42.3736, -71.1097], 13);
+        mapLink = 
+            '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+        L.tileLayer(
+            'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: '&copy; ' + mapLink + ' Contributors',
+            maxZoom: 18,
+            accessToken: 'pk.eyJ1IjoianR0IiwiYSI6ImNqaDBpeXIxMzJ3bjgzM21hbWM3eWNlMTcifQ.G22QHaDgf4xvuLIxBC_T-Q'
+            }).addTo(map);
+
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
+        map.addControl(drawControl);
+
+        map.on('draw:created', function (e) {
+            var type = e.layerType,
+                layer = e.layer;
+            drawnItems.addLayer(layer);
+        });
+
+    </script>
+</body>
+</html>
