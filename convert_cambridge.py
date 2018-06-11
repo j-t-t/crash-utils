@@ -16,8 +16,8 @@ if __name__ == '__main__':
     with open(args.csvfile) as f:
         csv_reader = csv.DictReader(f)
         for r in csv_reader:
-            if count == 0 and 'X' not in r.keys():
-                header = r.keys() + ['X', 'Y']
+            if count == 0 and 'X' not in list(r.keys()):
+                header = list(r.keys()) + ['X', 'Y']
 
             location = r['Location']
             lines = location.split('\n')
@@ -41,8 +41,8 @@ if __name__ == '__main__':
                             street1 + " & " + street2 + " Cambridge, MA")
                         latitude = address[1]
                         longitude = address[2]
-                        print address
-                        print count
+                        print(address)
+                        print(count)
                     count += 1
             else:
                 latlong = lines[len(lines)-1]

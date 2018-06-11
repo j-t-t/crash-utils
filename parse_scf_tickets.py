@@ -12,12 +12,12 @@ if __name__ == '__main__':
         data = json.load(data_file)
         for d in data:
 
-            if 'title' in d['request_type'].keys() and d[
+            if 'title' in list(d['request_type'].keys()) and d[
                     'request_type']['title'] == 'Icy or Snowy Bike Lane':
-                print d
-                print "\n"
+                print(d)
+                print("\n")
 
                 count += 1
-    print count
+    print(count)
 
 

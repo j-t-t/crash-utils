@@ -29,7 +29,7 @@ if __name__ == '__main__':
             dirname=os.path.join(args.datadir, 'processed/maps'))
 
         if address:
-            print address
+            print(address)
             # For now, need to get the address into the record type that
             # util.find_nearest needs.  Eventually this should be cleaned up
             inproj = pyproj.Proj(init='epsg:4326')
@@ -49,17 +49,17 @@ if __name__ == '__main__':
                 crashes, crash_data = util.group_json_by_location(crash_items)#years=[2015, 2016, 2017], yearfield='Date Time')
                 import ipdb; ipdb.set_trace()
 
-                if str(near_id) in crash_data.keys():
-                    print str(crash_data[str(near_id)]['count']) + " crashes found"
+                if str(near_id) in list(crash_data.keys()):
+                    print(str(crash_data[str(near_id)]['count']) + " crashes found")
 
     elif args.date:
-        print parse(args.date)
+        print(parse(args.date))
         results = [crash for crash in crash_items if parse(
             crash['dateOccurred']).date() == parse(args.date).date()]
         for r in results:
-            print r['location']
+            print(r['location'])
 
     else:
-        print "Need to give either address or date"
+        print("Need to give either address or date")
 
 
