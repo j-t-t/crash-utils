@@ -35,6 +35,10 @@ def geocode_row(row):
         address += ' Cambridge, MA USA'
 
     # g = geocoder.google(address)
+    g = geocoder.here(
+        address,
+        app_id=''
+        app_code='')
 
     import ipdb; ipdb.set_trace()
 
