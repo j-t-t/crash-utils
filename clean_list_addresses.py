@@ -1,7 +1,7 @@
 import argparse
 import csv
 import geocoder
-
+import time
 
 def geocode_row(row):
 
@@ -9,6 +9,7 @@ def geocode_row(row):
     neighborhood_key = None
     zip_key = None
     city_key = None
+
     for k in list(row.keys()):
         if 'Street' in k:
             street_key = k
@@ -17,6 +18,8 @@ def geocode_row(row):
         elif 'Zip' in k:
             zip_key = k
         elif 'city' in k:
+            city_key = k
+        elif 'City' in k:
             city_key = k
 
     address = row[street_key]
@@ -27,22 +30,38 @@ def geocode_row(row):
         address += ' ' + row[city_key]
         city_or_zip = True
     if row[zip_key]:
-        address += ' ' + row[zip_key]
+        # csv may strip 0 from beginning of zip
+        zipcode = row[zip_key]
+        if len(zipcode) == 4:
+            zipcode = '0' + str(zipcode)
+        address += ' ' + zipcode
         city_or_zip = True
     # Assume Cambridge if City or Zip not given
     # This may lead to some false positives on coordinates
     if not city_or_zip:
         address += ' Cambridge, MA USA'
 
-    # g = geocoder.google(address)
-    g = geocoder.here(
-        address,
-        app_id=''
-        app_code='')
+    time.sleep(1)
+    g = geocoder.google(address)
+    tries = 1
+    while tries < 5:
+        if g.status == 'OVER_QUERY_LIMIT':
+            time.sleep(tries)
+        else:
+            break
+        print(tries)
+        tries += 1
+    
+#    g = geocoder.here(
+#        address,
+#        app_id=''
+#        app_code='')
 
-    import ipdb; ipdb.set_trace()
-
+    print(row)
+    print(g.status)
     if g.status != 'OK':
+        if g.status == 'ZERO_RESULTS':
+            return None, None, 'F'
         return None, None, None
     elif g.json:
         return g.json['lat'], g.json['lng'], 'Y'
@@ -64,7 +83,7 @@ if __name__ == '__main__':
 
     # If spreadsheet doesn't have 'geocoded', 'updated_lat', and 'updated_lon'
     # add them
-    cutoff = 10
+    cutoff = 1000
     count = 0
     updated_rows = []
     with open(args.csvfile) as f:
